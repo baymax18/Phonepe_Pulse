@@ -1,2 +1,6 @@
-# Phonepe_Pulse
-The Phonepe pulse Github repository contains a large amount of data related to various metrics and statistics. The goal is to extract this data and process it to obtain insights and information that can be visualized in a user-friendly manner.
+Phonepe Pulse Data Visualization and Exploration : Unveiling Insights into Digital Transactions
+Phonepe Logo
+
+Welcome to the Phonepe Pulse Data Visualization and Exploration project.
+This project is designed to extract, process, and visualize data from the Phonepe Pulse GitHub repository, providing valuable insights into various metrics and statistics related to the Fintech domain.
+The result is an interactive and user-friendly dashboard that allows users to explore data and make data-driven decisions.
