@@ -43,7 +43,6 @@
 
 ## Getting Started
 **Clone the Repository:** Start by cloning this repository to your local machine.
-    git clone https://github.com/raghavendranhp/Phonepe-Pulse-Data-Visualization-and-Exploration.git
 **Install Dependencies:** Install the required Python libraries and packages.
 **Set Up PostgreSQL:** Configure and set up a PostgreSQL database with the necessary tables.
 **Run the Dashboard:** Execute the Streamlit app to launch the Phonepe Pulse dashboard.
