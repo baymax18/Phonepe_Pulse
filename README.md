@@ -27,12 +27,12 @@
 ## Technologies and Domain
 - **Data Extraction:** Github Cloning
 - **Data Processing:** Python, Pandas
-- **Database:** MySQL, mysql-connector-python
-- **Dashboard:** Streamlit, Plotly
+- **Database:** PostgreSQL, sqlalchemy
+- **Dashboard:** Streamlit, Pydeck
 - **Domain:** Fintech
 
 ## Project Overview
-- The Phonepe Pulse Data Visualization and Exploration project aims to extract data from the Phonepe Pulse GitHub repository, transform and process this data, insert it into a MySQL database, and create a live geo visualization dashboard using Streamlit and Plotly. 
+- The Phonepe Pulse Data Visualization and Exploration project aims to extract data from the Phonepe Pulse GitHub repository, transform and process this data, insert it into a PostgreSQL database, and create a live geo visualization dashboard using Streamlit and Plotly. 
 - Users can access this dashboard to interact with the data, gaining insights and valuable information about the Fintech domain.
 
 ## Key Features
