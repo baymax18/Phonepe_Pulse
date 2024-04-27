@@ -4,6 +4,7 @@ from streamlit_option_menu import option_menu
 import pandas as pd
 import geopandas as gpd
 import pydeck as pdk
+import matplotlib.pyplot as plt
 from sqlalchemy import create_engine, MetaData, Table
 import plotly.express as px
 import psycopg2
@@ -58,7 +59,7 @@ st.subheader(":violet[Phonepe Pulse| The Beat of Progress]")
 
 
 
-tab1, tab2, tab3 = st.tabs(["Insurance", "Transaction","User"])
+tab1, tab2, tab3, tab4 = st.tabs(["Insurance", "Transaction","User","Insights"])
 
 with tab1:
 
@@ -230,7 +231,24 @@ with tab2:
         trans_cat = trans_cat.sort_values(by='transaction_amount', ascending=False).head(10)
         trans_cat = trans_cat.reset_index(drop=True)
         trans_cat.columns = trans_cat.columns.str.title()
+        # st.write(type(trans_cat))
         col2.dataframe(trans_cat,hide_index=True)
+        # plt.figure(figsize=(8, 6),facecolor='none')
+        
+        fig, ax = plt.subplots(figsize=(8,6),facecolor='none')
+        ax.patch.set_alpha(0)
+        wedges, texts, autotexts = ax.pie(trans_cat['Transaction_Amount'],autopct='',startangle=90)
+        plt.legend(wedges,trans_cat['Transaction_Type'], title='Transaction_Type', loc='center left', bbox_to_anchor=(1, 0, 0.5, 1))
+
+        ax.axis('equal')
+        col2.pyplot(fig)
+
+
+
+
+
+
+
         with col3:
             col3.subheader(':violet[Transaction Details for Filtered Criteria]')
             top_10_state = st.checkbox(':green[State]')
@@ -471,3 +489,191 @@ with tab3:
                         top_pin['S.No'] = range(1, len(top_pin) + 1)
                         col4.dataframe(top_pin[['S.No','Pincode','Registeredusers']], hide_index=True)
 
+
+### Insights
+
+with tab4:
+
+   
+    question = st.selectbox("Choose Your Question for Predefined Insights of Phonepe Pulse:",
+                            ("Pick your Question",
+                            '1. Quarter Wise Insuarance performance for the years 2020, 2021, 2022, 2023?',
+                            '2. Show the Year Wise[2020,2021,2022,2023] Insurance Performance?',
+                            '3. Average Permium Amount for the years [2020,2021,2022,2023]?',
+                            '4. Quarter Wise Transcation Count for years 2018-2023?',
+                            '5. Show the Year Wise[2018-2023] Transaction Count?',
+                            '6. Average Transaction Amount for years [2018- 2023]',
+                            '7. Show the registered users count for year[2018-2023]',
+                            '8. New Users for the years [2018 - 2023]?',
+                            '9. Quarter Wise registered count  for years 2018-2023?',
+                            '10.State Wise Transaction Count Vs User Count'))
+    # st.dataframe(dfs['df_aggregated_insurance']
+
+    if question == "Pick your Question":
+        pass
+    elif question == '1. Quarter Wise Insuarance performance for the years 2020, 2021, 2022, 2023?':
+        
+        ins_qr = dfs['df_aggregated_insurance'].groupby('quarter')['count'].sum().reset_index()
+        ins_qr.columns = ins_qr.columns.str.title()
+        ins_qr['S.No'] = range(1, len(ins_qr) + 1)
+        st.dataframe(ins_qr[['S.No','Quarter','Count']], hide_index=True)
+
+        plt.figure(figsize=(10, 5), dpi=100) # Set figure size and DPI
+        plt.bar(ins_qr['Quarter'], ins_qr['Count'], color='purple')
+        plt.xlabel('Quarters')
+        plt.ylabel('Insurance Count in Lakhs')
+        plt.title('Quarterly Insurance Performance for Years (2020-2023)')
+        plt.xticks(ins_qr['Quarter'])
+        plt.grid(axis='y')
+        st.pyplot(plt.gcf())
+    elif question == '2. Show the Year Wise[2020,2021,2022,2023] Insurance Performance?':
+        
+        ins_qr = dfs['df_aggregated_insurance'].groupby('year')['count'].sum().reset_index()
+        ins_qr.columns = ins_qr.columns.str.title()
+        ins_qr['S.No'] = range(1, len(ins_qr) + 1)
+        st.dataframe(ins_qr[['S.No','Year','Count']], hide_index=True)
+
+        plt.figure(figsize=(10, 5), dpi=100)  # Set figure size and DPI
+        plt.bar(ins_qr['Year'], ins_qr['Count'], color='purple')
+        plt.xlabel('Year')
+        plt.ylabel('Insurance Count in Lakhs')
+        plt.title('Year Wise(2020,2021,2022,2023) Insurance Performance')
+        plt.xticks(ins_qr['Year'])
+        plt.grid(axis='y')
+        st.pyplot(plt.gcf())
+    elif question == '3. Average Permium Amount for the years [2020,2021,2022,2023]?':
+        
+        ins_qr = dfs['df_aggregated_insurance'].groupby('year')['amount'].mean().reset_index()
+        ins_qr.columns = ins_qr.columns.str.title()
+        ins_qr['S.No'] = range(1, len(ins_qr) + 1)
+        st.dataframe(ins_qr[['S.No','Year','Amount']], hide_index=True)
+
+        plt.figure(figsize=(10, 5), dpi=100)  # Set figure size and DPI
+        plt.bar(ins_qr['Year'], ins_qr['Amount'], color='purple')
+        plt.xlabel('Year')
+        plt.ylabel('Average Insurance Amount in Crore')
+        plt.title('Year Wise(2020,2021,2022,2023) Average Premium Amount')
+        plt.xticks(ins_qr['Year'])
+        plt.grid(axis='y')
+        st.pyplot(plt.gcf())
+    elif question == '4. Quarter Wise Transcation Count for years 2018-2023?':
+        
+        ins_qr = dfs['df_map_trans'].groupby('quarter')['count'].sum().reset_index()
+        ins_qr.columns = ins_qr.columns.str.title()
+        ins_qr['S.No'] = range(1, len(ins_qr) + 1)
+        st.dataframe(ins_qr[['S.No','Quarter','Count']], hide_index=True)
+
+        plt.figure(figsize=(10, 5), dpi=100)  # Set figure size and DPI
+        plt.bar(ins_qr['Quarter'], ins_qr['Count'], color='purple')
+        plt.xlabel('Quarters')
+        plt.ylabel('Transaction Count in Ten Billion')
+        plt.title('Quarterly Transaction for Years (2020-2023)')
+        plt.xticks(ins_qr['Quarter'])
+        plt.grid(axis='y')
+        st.pyplot(plt.gcf())
+    elif question == '5. Show the Year Wise[2018-2023] Transaction Count?':
+        
+        ins_qr = dfs['df_map_trans'].groupby('year')['count'].sum().reset_index()
+        ins_qr.columns = ins_qr.columns.str.title()
+        ins_qr['S.No'] = range(1, len(ins_qr) + 1)
+        st.dataframe(ins_qr[['S.No','Year','Count']], hide_index=True)
+
+        plt.figure(figsize=(10, 5), dpi=100)  # Set figure size and DPI
+        plt.bar(ins_qr['Year'], ins_qr['Count'], color='purple')
+        plt.xlabel('Year')
+        plt.ylabel('Transaction Count in Ten Billion')
+        plt.title('Year Wise(2020,2021,2022,2023) Transaction Count')
+        plt.xticks(ins_qr['Year'])
+        plt.grid(axis='y')
+        st.pyplot(plt.gcf())
+    elif question == '6. Average Transaction Amount for years [2018- 2023]':
+        
+        ins_qr = dfs['df_map_trans'].groupby('year')['amount'].mean().reset_index()
+        ins_qr.columns = ins_qr.columns.str.title()
+        ins_qr['S.No'] = range(1, len(ins_qr) + 1)
+        st.dataframe(ins_qr[['S.No','Year','Amount']], hide_index=True)
+
+        plt.figure(figsize=(10, 5), dpi=100)  # Set figure size and DPI
+        plt.bar(ins_qr['Year'], ins_qr['Amount'], color='purple')
+        plt.xlabel('Year')
+        plt.ylabel('Average Transaction Amount in Ten Billion')
+        plt.title('Year Wise(2020,2021,2022,2023) Average Transaction Amount')
+        plt.xticks(ins_qr['Year'])
+        plt.grid(axis='y')
+        st.pyplot(plt.gcf())
+
+    elif question == '8. New Users for the years [2018 - 2023]?':
+        
+        ins_qr = dfs['df_map_user'].groupby('year')['appopens'].sum().reset_index()
+        ins_qr.columns = ins_qr.columns.str.title()
+        ins_qr['S.No'] = range(1, len(ins_qr) + 1)
+        st.dataframe(ins_qr[['S.No','Year','Appopens']], hide_index=True)
+
+        plt.figure(figsize=(10, 5), dpi=100)  # Set figure size and DPI
+        plt.bar(ins_qr['Year'], ins_qr['Appopens'], color='purple')
+        plt.xlabel('Year')
+        plt.ylabel('App Opens in Hundered Billion')
+        plt.title('New Users for Years (2020-2023)')
+        plt.xticks(ins_qr['Year'])
+        plt.grid(axis='y')
+        st.pyplot(plt.gcf())
+
+    elif question == '7. Show the registered users count for year[2018-2023]':
+        
+        ins_qr = dfs['df_map_user'].groupby('year')['registeredusers'].sum().reset_index()
+        ins_qr.columns = ins_qr.columns.str.title()
+        ins_qr['S.No'] = range(1, len(ins_qr) + 1)
+        st.dataframe(ins_qr[['S.No','Year','Registeredusers']], hide_index=True)
+
+        plt.figure(figsize=(10, 5), dpi=100)  # Set figure size and DPI
+        bar_width = 0.4
+        plt.bar(ins_qr['Year'], ins_qr['Registeredusers'], color='purple')
+        plt.xlabel('Year')
+        plt.ylabel('Registered Users in Billion')
+        plt.title('Year Wise Registeres Users (2020-2023)')
+        plt.xticks(ins_qr['Year'])
+        plt.grid(axis='y')
+        st.pyplot(plt.gcf())
+    elif question == '9. Quarter Wise registered count  for years 2018-2023?':
+        
+        ins_qr = dfs['df_map_user'].groupby('quarter')['registeredusers'].sum().reset_index()
+        ins_qr.columns = ins_qr.columns.str.title()
+        ins_qr['S.No'] = range(1, len(ins_qr) + 1)
+        st.dataframe(ins_qr[['S.No','Quarter','Registeredusers']], hide_index=True)
+
+        plt.figure(figsize=(10, 5), dpi=100)  # Set figure size and DPI
+        bar_width = 0.4
+        plt.bar(ins_qr['Quarter'], ins_qr['Registeredusers'], color='purple')
+        plt.xlabel('Quarter')
+        plt.ylabel('Registered Users in Billion')
+        plt.title('Quater Wise New Users for Years (2020-2023)')
+        plt.xticks(ins_qr['Quarter'])
+        plt.grid(axis='y')
+        st.pyplot(plt.gcf())
+
+    elif question == '10.State Wise Transaction Count Vs User Count':
+        
+        state_trans = dfs['df_map_trans'].groupby('state')['count'].sum().reset_index()
+        state_user = dfs['df_map_user'].groupby('state')['registeredusers'].sum().reset_index()
+        merged_df = pd.merge(state_trans, state_user, on='state')
+
+        fig, ax = plt.subplots(figsize=(12, 8))
+        bar_width = 0.4
+        index = range(len(merged_df))
+        ax.bar(index, merged_df['count'], width=bar_width, label='Transaction Count', color='purple')
+
+        ax.bar([i + bar_width for i in index], merged_df['registeredusers'], width=bar_width, label='User Count', color='orange')
+
+        # Customize labels and title
+        ax.set_xlabel('State')
+        ax.set_ylabel('Count in Ten Billion')
+        ax.set_title('State Wise Transaction Count Vs User Count')
+        ax.set_xticks([i + bar_width/2 for i in index])
+        ax.set_xticklabels(merged_df['state'])
+        ax.legend()
+
+        # Rotate x-axis labels for better visibility
+        plt.xticks(rotation=90, ha='right')  
+
+        # Display the plot in Streamlit
+        st.pyplot(fig)
