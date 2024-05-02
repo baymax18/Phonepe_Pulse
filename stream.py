@@ -9,14 +9,16 @@ from sqlalchemy import create_engine, MetaData, Table
 import plotly.express as px
 import psycopg2
 import json
+import locale
 
 
 
 def format_indian_rupees(amount):
-    amount_str = str(amount)[::-1]
-    groups = [amount_str[i:i+3] for i in range(0, len(amount_str), 3)]
-    formatted_amount = ','.join(groups)[::-1]
-    return formatted_amount
+
+    locale.setlocale(locale.LC_ALL, 'en_IN.UTF-8')
+    formatted_rupees = locale.currency(amount, grouping=True)
+    return formatted_rupees
+
 
 engine = create_engine('postgresql://postgres:admin@localhost:5432/phonepe_pulse')
 metadata = MetaData()
@@ -111,7 +113,7 @@ with tab1:
                                     pickable=True,
                                     auto_highlight=True)
             tooltip = {
-                "html": "State <b>{state}</b> </br> Year <b>{year}</b> </br> Quarter <b>{quarter}</b> </br> Policy Count <b>{count}</b> </br> Premium Amount <b>{amount}</b>",
+                "html": "State <b>{state}</b> </br> Year <b>{year}</b> </br> Quarter <b>{quarter}</b> </br> Policy Count <b>{count}</b> </br> Premium Amount in Rs <b>{amount}</b>",
                 "style": {"background": "grey", "color": "white", "font-family": '"Helvetica Neue", Arial', "z-index": "10000"},
             }
 
@@ -231,12 +233,13 @@ with tab2:
         trans_cat = trans_cat.sort_values(by='transaction_amount', ascending=False).head(10)
         trans_cat = trans_cat.reset_index(drop=True)
         trans_cat.columns = trans_cat.columns.str.title()
-        # st.write(type(trans_cat))
+        trans_cat['Transaction_Amount'] = trans_cat['Transaction_Amount'].apply(format_indian_rupees)
         col2.dataframe(trans_cat,hide_index=True)
-        # plt.figure(figsize=(8, 6),facecolor='none')
+       
         
         fig, ax = plt.subplots(figsize=(8,6),facecolor='none')
         ax.patch.set_alpha(0)
+        trans_cat['Transaction_Amount'] = trans_cat['Transaction_Amount'].str.replace('₹', '').str.replace(',', '').astype(float)
         wedges, texts, autotexts = ax.pie(trans_cat['Transaction_Amount'],autopct='',startangle=90)
         plt.legend(wedges,trans_cat['Transaction_Type'], title='Transaction_Type', loc='center left', bbox_to_anchor=(1, 0, 0.5, 1))
 
@@ -333,7 +336,7 @@ with tab2:
                                     pickable=True,
                                     auto_highlight=True)
             tooltip = {
-                "html": "State <b>{state}</b> </br> District <b>{district}</b> </br> Year <b>{year}</b> </br> Quarter <b>{quarter}</b> </br> Transaction Count <b>{count}</b> </br> Transaction Amount <b>{amount}</b>",
+                "html": "State <b>{state}</b> </br> District <b>{district}</b> </br> Year <b>{year}</b> </br> Quarter <b>{quarter}</b> </br> Transaction Count <b>{count}</b> </br> Transaction Amount in Rs<b>{amount}</b>",
                 "style": {"background": "grey", "color": "white", "font-family": '"Helvetica Neue", Arial', "z-index": "10000"},
             }
 
