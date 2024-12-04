@@ -3,3 +3,7 @@ streamlit_option_menu
 pandas
 geopandas
 pydeck
+matplotlib
+sqlalchemy
+geodatasets
+plotly.express
