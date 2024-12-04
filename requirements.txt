@@ -7,3 +7,4 @@ matplotlib
 sqlalchemy
 geodatasets
 plotly.express
+psycopg2
